@@ -1,11 +1,6 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 vim.keymap.set("n", "-", "<CMD>Oil<CR>*", { desc = "Open parent directory" })
 
-vim.keymap.set("i", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
-vim.keymap.set("n", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
-
-vim.keymap.set("i", "jj", "<Esc>", { desc = "Esc" })
-
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
 vim.keymap.set("n", "<Leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
 
@@ -16,10 +11,12 @@ vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, { desc = 
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
 
 vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "Buffers" })
+vim.keymap.set("n", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 
--- vim.keymap.set("n", "<leader>fu", vim.diagnostic.disable(), { desc = "fuck lsp" })
+vim.keymap.set("i", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
+vim.keymap.set("i", "jj", "<Esc>", { desc = "Esc" })
+vim.keymap.set("i", "hh",function() vim.b.x = not vim.b.x require('cmp').setup.buffer { enabled = not vim.b.x } end, { desc = "Fuck Autocompletion" })
 
--- vim.diagnostic.disable()
--- vim.diagnostic.enable()
--- vim.diagnostic.hide()
--- vim.diagnostic.show()
+-- Other thing i can do if  I want to disable UI clutter
+  -- disable inline hints <leader>uh
+  -- LspStop and LspStart
