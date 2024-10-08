@@ -11,11 +11,12 @@ vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, { desc = 
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
 
 vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "Buffers" })
-vim.keymap.set("n", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 
+-- vim.keymap.set("n", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 vim.keymap.set("i", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
-vim.keymap.set("i", "kj", "<Esc>", { desc = "Esc" })
-vim.keymap.set({"i", "n"}, "hh",function() vim.b.x = not vim.b.x require('cmp').setup.buffer { enabled = not vim.b.x } end, { desc = "Fuck Autocompletion" })
+
+-- vim.keymap.set("i", "kj", "<Esc>", { desc = "Esc" })
+-- vim.keymap.set({"i", "n"}, "kj",function() vim.b.x = not vim.b.x require('cmp').setup.buffer { enabled = not vim.b.x } end, { desc = "Fuck Autocompletion" })
 
 --https://github.com/hrsh7th/nvim-cmp/issues/850
 -- ['<C-n>'] = mapping(mapping.select_next_item({ behavior = types.cmp.SelectBehavior.Select }), { 'i', 'c' }),
@@ -24,6 +25,3 @@ vim.keymap.set({"i", "n"}, "hh",function() vim.b.x = not vim.b.x require('cmp').
 -- Other thing i can do if  I want to disable UI clutter
   -- disable inline hints <leader>uh
   -- LspStop and LspStart
-
-
-
