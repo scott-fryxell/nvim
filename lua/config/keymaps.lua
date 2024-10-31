@@ -11,7 +11,7 @@ vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, { desc = 
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
 
 vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "Buffers" })
-
+vim.keymap.set("n", "<leader>fr", vim.diagnostic.open_float, { desc = "Open float for lsp messages" })
 -- vim.keymap.set("n", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 vim.keymap.set("i", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 

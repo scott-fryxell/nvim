@@ -29,6 +29,7 @@ end
 return {
   {
     "neovim/nvim-lspconfig",
+
     opts = {
       servers = {
         vtsls = {
