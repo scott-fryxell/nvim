@@ -14,7 +14,6 @@ return {
 
   -- Configure LazyVim to load gruvbox
   {
-    z
     "LazyVim/LazyVim",
     opts = {
       colorscheme = "gruvbox",
@@ -29,7 +28,7 @@ return {
   },
 
   -- disable trouble
-  { "folke/trouble.nvim",      enabled = false },
+  { "folke/trouble.nvim", enabled = false },
 
   -- add symbols-outline
   {

@@ -11,7 +11,7 @@ vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, { desc = 
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
 
 vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "Buffers" })
-vim.keymap.set("n", "<leader>fr", vim.diagnostic.open_float, { desc = "Open float for lsp messages" })
+vim.keymap.set("n", "<leader>fv", vim.diagnostic.open_float, { desc = "Open float for lsp messages" })
 -- vim.keymap.set("n", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 vim.keymap.set("i", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 
@@ -25,3 +25,8 @@ vim.keymap.set("i", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 -- Other thing i can do if  I want to disable UI clutter
   -- disable inline hints <leader>uh
   -- LspStop and LspStart
+
+--source files as your working with them
+vim.keymap.set("n", "<space><space>x", "<cmd>source %<CR>")
+vim.keymap.set("n", "<space>x", ":.lua<CR>")
+vim.keymap.set("v", "<space>x", ":lua<CR>")
