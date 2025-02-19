@@ -75,9 +75,11 @@ return {
           async = true,
         },
       },
-      -- command line completion, thanks to dpetka2001 in reddit
-      -- https://www.reddit.com/r/neovim/comments/1hjjf21/comment/m37fe4d/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
-      cmdline = function()
+    })
+
+    -- Add this new cmdline configuration outside of sources
+    opts.cmdline = {
+      sources = function()
         local type = vim.fn.getcmdtype()
         if type == "/" or type == "?" then
           return { "buffer" }
@@ -86,8 +88,8 @@ return {
           return { "cmdline" }
         end
         return {}
-      end,
-    })
+      end
+    }
 
     -- The default preset used by lazyvim accepts completions with enter
     -- I don't like using enter because if on markdown and typing
