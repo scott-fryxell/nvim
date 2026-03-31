@@ -22,3 +22,6 @@ vim.opt.smartindent = true  -- does the right thing (mostly) in programs
 
 vim.opt.shiftwidth = 2
 vim.opt.clipboard = "unnamedplus"
+
+-- Disable swap files
+vim.opt.swapfile = false

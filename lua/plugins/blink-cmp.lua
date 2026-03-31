@@ -18,7 +18,7 @@ return {
     -- Merge custom sources with the existing ones from lazyvim
     -- NOTE: by default lazyvim already includes the lazydev source, so not adding it here again
     opts.sources = vim.tbl_deep_extend("force", opts.sources or {}, {
-      default = { "lsp", "path", "snippets", "buffer", "copilot" },
+      default = { "lsp", "path", "snippets", "buffer" },
       providers = {
         lsp = {
           name = "lsp",
@@ -63,16 +63,6 @@ return {
           module = "blink.cmp.sources.snippets",
           min_keyword_length = 4,
           score_offset = 80, -- the higher the number, the higher the priority
-        },
-        -- Third class citizen mf always talking shit
-        copilot = {
-          name = "copilot",
-          enabled = true,
-          module = "blink-cmp-copilot",
-          kind = "Copilot",
-          min_keyword_length = 3,
-          score_offset = 1, -- the higher the number, the higher the priority
-          async = true,
         },
       },
     })
