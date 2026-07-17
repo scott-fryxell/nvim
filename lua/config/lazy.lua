@@ -39,7 +39,6 @@ require("lazy").setup({
   },
 })
 
-
 -- https://github.com/vuejs/language-tools/blob/master/CHANGELOG.md#200-202432
 -- require("lspconfig").volar.setup({
 --   init_options = {

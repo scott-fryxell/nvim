@@ -2,5 +2,7 @@ return {
   "m4xshen/hardtime.nvim",
   lazy = false,
   dependencies = { "MunifTanjim/nui.nvim" },
-  opts = {},
+  opts = {
+    notification_length = 5000,
+  },
 }
