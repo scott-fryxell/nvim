@@ -24,3 +24,6 @@ vim.opt.clipboard = "unnamedplus"
 
 -- Disable swap files
 vim.opt.swapfile = false
+
+-- No zsh treesitter parser exists, so ```zsh code fences highlight as bash
+vim.treesitter.language.register("bash", "zsh")
