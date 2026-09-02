@@ -3,12 +3,10 @@
 -- Add any additional autocmds here
 
 -- Write the open-buffer + oil state to disk so brayness (pi) can see what
--- we're working on. Read by the `nvim-buffers` skill. Refreshed on focus and
--- on a short timer so it never goes stale even when files change externally.
+-- we're working on. Read by the `nvim-buffers` skill.
 local group = vim.api.nvim_create_augroup("brayness_buffers", { clear = true })
 
 local state_file = vim.fn.stdpath("state") .. "/open-buffers.json"
-local mtimes = {} -- buf number -> mtime last read, to spot external edits
 
 local function is_file(name)
   -- Only real absolute path buffers; skips term://, oil://, unnamed, etc.
@@ -107,53 +105,10 @@ local function write_state()
   end
 end
 
--- Record the disk mtime a buffer was read from, so we can spot external edits.
-local function capture(buf)
-  local name = vim.api.nvim_buf_get_name(buf)
-  if is_file(name) then
-    mtimes[buf] = vim.fn.getftime(name)
-  end
-end
-
--- Reload listed buffers changed on disk, without clobbering unsaved edits.
-local function reload_external_changes()
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) then
-      local name = vim.api.nvim_buf_get_name(buf)
-      if is_file(name) and not vim.api.nvim_buf_get_option(buf, "modified") then
-        local disk = vim.fn.getftime(name)
-        local known = mtimes[buf] or disk
-        if disk > known then
-          vim.api.nvim_buf_call(buf, function()
-            pcall(vim.cmd, "silent edit!")
-          end)
-          mtimes[buf] = vim.fn.getftime(name)
-        end
-      end
-    end
-  end
-end
-
-local function refresh()
-  reload_external_changes()
-  write_state()
-end
-
 vim.api.nvim_create_autocmd(
-  { "VimEnter", "BufAdd", "BufEnter", "BufDelete", "BufWipeout", "VimLeavePre" },
+  { "VimEnter", "BufAdd", "BufEnter", "BufDelete", "BufWipeout", "VimLeavePre", "FocusGained" },
   { group = group, callback = write_state }
 )
-vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
-  group = group,
-  callback = function(ev)
-    capture(ev.buf)
-  end,
-})
-vim.api.nvim_create_autocmd("FocusGained", { group = group, callback = refresh })
-
--- Safety net: some terminals don't send focus events, so keep state fresh and
--- reload external edits on a short interval regardless.
-vim.fn.timer_start(5000, refresh, { ["repeat"] = -1 })
 
 -- Stylus: treesitter has no fold queries, so fall back to indent folding
 -- Stylus is whitespace-significant, so indent-based folds work naturally
