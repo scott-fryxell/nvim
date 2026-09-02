@@ -30,4 +30,33 @@ vim.keymap.set("i", "<C-d>", "<Del>", { desc = "Forward delete a letter" })
 vim.keymap.set("n", "<space><space>x", "<cmd>source %<CR>")
 vim.keymap.set("n", "<space>x", ":.lua<CR>")
 vim.keymap.set("v", "<space>x", ":lua<CR>")
-vim.keymap.set('i', "<C-a>", "<Esc>$a", { desc = "move to end of line and stay in insert mode" })
+-- macOS / Emacs line editing in insert mode (Ctrl+A, Ctrl+E, ...)
+-- Ctrl+N and Ctrl+P stay on blink-cmp; use arrow keys for line up/down here.
+local emacs_insert = {
+  ["<C-a>"] = { "<C-o>0", "Beginning of line" },
+  ["<C-e>"] = { "<C-o>$", "End of line" },
+  ["<C-f>"] = { "<Right>", "Forward character" },
+  ["<C-b>"] = { "<Left>", "Backward character" },
+  ["<C-d>"] = { "<Del>", "Forward delete" },
+  ["<C-h>"] = { "<BS>", "Backspace" },
+  ["<C-k>"] = { "<C-o>D", "Delete to end of line" },
+  ["<C-u>"] = { "<C-o>d0", "Delete to beginning of line" },
+  ["<C-w>"] = { "<C-o>db", "Delete word backward" },
+}
+
+for key, map in pairs(emacs_insert) do
+  vim.keymap.set("i", key, map[1], { desc = map[2] })
+end
+
+local emacs_cmdline = {
+  ["<C-a>"] = "<Home>",
+  ["<C-e>"] = "<End>",
+  ["<C-f>"] = "<Right>",
+  ["<C-b>"] = "<Left>",
+  ["<C-d>"] = "<Del>",
+  ["<C-h>"] = "<BS>",
+}
+
+for key, rhs in pairs(emacs_cmdline) do
+  vim.keymap.set("c", key, rhs, { desc = "Emacs line edit" })
+end
