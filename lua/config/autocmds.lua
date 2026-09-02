@@ -164,3 +164,28 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.foldenable = true
   end,
 })
+
+-- Markdown: continue lists on <CR> like iA Writer does. An empty item is
+-- cleared instead of continued, so a second <CR> ends the list.
+local function continue_list()
+  local line = vim.api.nvim_get_current_line()
+  local indent, marker, rest = line:match("^(%s*)([-*+])%s+(.*)$")
+  if not marker then
+    local number, punct
+    indent, number, punct, rest = line:match("^(%s*)(%d+)([.)])%s+(.*)$")
+    if number then marker = tostring(tonumber(number) + 1) .. punct end
+  end
+  if not marker then return "\r" end
+  if rest == "" then
+    vim.api.nvim_set_current_line("")
+    return "\r"
+  end
+  return "\r" .. indent .. marker .. " "
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "markdown.mdx" },
+  callback = function(ev)
+    vim.keymap.set("i", "<CR>", continue_list, { buffer = ev.buf, expr = true })
+  end,
+})
