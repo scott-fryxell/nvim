@@ -68,6 +68,42 @@ local function collect_oil()
   return entries
 end
 
+-- Nothing on disk yet, so the pasted text is the only record. Carry it in
+-- the state file so brayness can read it before you name a path. Capped so
+-- one huge paste cannot bloat the file; scratch_text is null when capped.
+local scratch_max_bytes = 200 * 1024
+local scratch_max_bytes_per_buffer = 64 * 1024
+
+local function collect_scratch()
+  local entries = {}
+  local total = 0
+  local text_limit = scratch_max_bytes_per_buffer
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) then
+      local name = vim.api.nvim_buf_get_name(buf)
+      -- Named and unmodified files are already on disk; skip them.
+      -- buftype "" is a normal buffer; dashboards and popups are nofile.
+      if vim.bo[buf].buftype == "" and (not is_file(name) or vim.bo[buf].modified) then
+        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        -- Drop the trailing empty line every fresh buffer carries.
+        if #lines == 1 and lines[1] == "" then lines = {} end
+        local text = table.concat(lines, "\n")
+        local capped = #text > text_limit or total + #text > scratch_max_bytes
+        if not capped then total = total + #text end
+        table.insert(entries, {
+          bufnr = buf,
+          name = name ~= "" and name or nil,
+          filetype = vim.bo[buf].filetype ~= "" and vim.bo[buf].filetype or nil,
+          lines = #lines,
+          capped = capped or nil,
+          text = capped and nil or text,
+        })
+      end
+    end
+  end
+  return entries
+end
+
 local function current_view()
   local win = vim.api.nvim_get_current_win()
   local buf = vim.api.nvim_win_get_buf(win)
@@ -94,6 +130,7 @@ local function write_state()
   local data = vim.json.encode({
     current = is_file(current) and current or oil_dir(current) or nil,
     buffers = collect_buffers(),
+    scratch = collect_scratch(),
     oil = collect_oil(),
     view = current_view(),
     updated = os.date("%Y-%m-%dT%H:%M:%S"),
@@ -106,8 +143,23 @@ local function write_state()
 end
 
 vim.api.nvim_create_autocmd(
-  { "VimEnter", "BufAdd", "BufEnter", "BufDelete", "BufWipeout", "VimLeavePre", "FocusGained" },
+  { "VimEnter", "BufAdd", "BufEnter", "BufDelete", "BufWipeout", "VimLeavePre", "FocusGained", "TextChanged", "InsertLeave" },
   { group = group, callback = write_state }
+)
+
+-- 5s tick, but only while an unsaved buffer exists. Idle sessions stay quiet.
+local timer = vim.uv.new_timer()
+timer:start(
+  5000,
+  5000,
+  vim.schedule_wrap(function()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].modified then
+        write_state()
+        return
+      end
+    end
+  end)
 )
 
 -- Stylus: treesitter has no fold queries, so fall back to indent folding
