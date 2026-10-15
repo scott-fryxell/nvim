@@ -1,6 +1,3 @@
--- Inject CSS highlighting into <style lang="stylus"> blocks in Vue SFCs.
--- No tree-sitter-stylus parser exists, so css is the closest approximation.
--- `; extends` preserves the default vue injections and appends this rule.
 return {
   {
     "nvim-treesitter/nvim-treesitter",

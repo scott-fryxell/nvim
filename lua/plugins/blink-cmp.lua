@@ -1,22 +1,12 @@
--- Filename: ~/github/dotfiles-latest/neovim/neobean/lua/plugins/blink-cmp.lua
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/blink-cmp.lua
 
--- completion plugin with support for LSPs and external sources that updates
--- on every keystroke with minimal overhead
 
--- https://www.lazyvim.org/extras/coding/blink
--- https://github.com/saghen/blink.cmp
--- Documentation site: https://cmp.saghen.dev/
 
--- NOTE: Specify the trigger character(s) used for luasnip
 local trigger_text = ";"
 
 return {
   "saghen/blink.cmp",
   enabled = true,
   opts = function(_, opts)
-    -- Merge custom sources with the existing ones from lazyvim
-    -- NOTE: by default lazyvim already includes the lazydev source, so not adding it here again
     opts.sources = vim.tbl_deep_extend("force", opts.sources or {}, {
       default = { "lsp", "path", "snippets", "buffer" },
       providers = {
@@ -25,20 +15,12 @@ return {
           enabled = true,
           module = "blink.cmp.sources.lsp",
           kind = "LSP",
-          -- When linking markdown notes, I would get snippets and text in the
-          -- suggestions, I want those to show only if there are no LSP
-          -- suggestions
-          -- Disabling fallbacks as my snippets woudlnt show up
-          -- fallbacks = { "luasnip", "buffer" },
-          score_offset = 90, -- the higher the number, the higher the priority
+          score_offset = 90,
         },
         path = {
           name = "Path",
           module = "blink.cmp.sources.path",
           score_offset = 3,
-          -- When typing a path, I would get snippets and text in the
-          -- suggestions, I want those to show only if there are no path
-          -- suggestions
           fallbacks = { "luasnip", "buffer" },
           opts = {
             trailing_slash = false,
@@ -62,13 +44,17 @@ return {
           max_items = 3,
           module = "blink.cmp.sources.snippets",
           min_keyword_length = 4,
-          score_offset = 80, -- the higher the number, the higher the priority
+          score_offset = 80,
         },
       },
     })
 
-    -- Add this new cmdline configuration outside of sources
     opts.cmdline = {
+      keymap = {
+        preset = "default",
+        ["<Tab>"] = { "accept", "fallback" },
+        ["<S-Tab>"] = { "select_prev", "fallback" },
+      },
       sources = function()
         local type = vim.fn.getcmdtype()
         if type == "/" or type == "?" then
@@ -81,11 +67,6 @@ return {
       end
     }
 
-    -- The default preset used by lazyvim accepts completions with enter
-    -- I don't like using enter because if on markdown and typing
-    -- something, but you want to go to the line below, if you press enter,
-    -- the completion will be accepted
-    -- https://cmp.saghen.dev/configuration/keymap.html#default
     opts.keymap = {
       preset = "default",
       ["<Tab>"] = { "snippet_forward", "fallback" },

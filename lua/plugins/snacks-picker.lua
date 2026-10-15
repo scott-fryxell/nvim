@@ -1,4 +1,3 @@
--- Extra maps <leader>fg to git_files, which errors outside a git root.
 return {
   {
     "folke/snacks.nvim",

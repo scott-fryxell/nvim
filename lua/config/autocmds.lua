@@ -1,19 +1,12 @@
--- Autocmds are automatically loaded on the VeryLazy event
--- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
--- Add any additional autocmds here
 
--- Write the open-buffer + oil state to disk so brayness (pi) can see what
--- we're working on. Read by the `nvim-buffers` skill.
 local group = vim.api.nvim_create_augroup("brayness_buffers", { clear = true })
 
 local state_file = vim.fn.stdpath("state") .. "/open-buffers.json"
 
 local function is_file(name)
-  -- Only real absolute path buffers; skips term://, oil://, unnamed, etc.
   return name:sub(1, 1) == "/"
 end
 
--- Oil buffer names look like "oil:///abs/dir"; strip the prefix to the dir.
 local function oil_dir(name)
   if name:sub(1, 6) == "oil://" then
     return name:sub(7)
@@ -34,8 +27,6 @@ local function collect_buffers()
   return buffers
 end
 
--- Oil buffer lines are the entry names (dirs suffixed with "/"); the cursor
--- row is whatever's highlighted in the picker, so just read that line.
 local function oil_highlighted_entry(buf, win)
   local line = vim.api.nvim_win_get_cursor(win)[1]
   local text = vim.api.nvim_buf_get_lines(buf, line - 1, line, false)[1]
@@ -68,9 +59,6 @@ local function collect_oil()
   return entries
 end
 
--- Nothing on disk yet, so the pasted text is the only record. Carry it in
--- the state file so brayness can read it before you name a path. Capped so
--- one huge paste cannot bloat the file; scratch_text is null when capped.
 local scratch_max_bytes = 200 * 1024
 local scratch_max_bytes_per_buffer = 64 * 1024
 
@@ -81,11 +69,8 @@ local function collect_scratch()
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) then
       local name = vim.api.nvim_buf_get_name(buf)
-      -- Named and unmodified files are already on disk; skip them.
-      -- buftype "" is a normal buffer; dashboards and popups are nofile.
       if vim.bo[buf].buftype == "" and (not is_file(name) or vim.bo[buf].modified) then
         local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-        -- Drop the trailing empty line every fresh buffer carries.
         if #lines == 1 and lines[1] == "" then lines = {} end
         local text = table.concat(lines, "\n")
         local capped = #text > text_limit or total + #text > scratch_max_bytes
@@ -147,7 +132,6 @@ vim.api.nvim_create_autocmd(
   { group = group, callback = write_state }
 )
 
--- 5s tick, but only while an unsaved buffer exists. Idle sessions stay quiet.
 local timer = vim.uv.new_timer()
 timer:start(
   5000,
@@ -162,8 +146,6 @@ timer:start(
   end)
 )
 
--- Stylus: treesitter has no fold queries, so fall back to indent folding
--- Stylus is whitespace-significant, so indent-based folds work naturally
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "stylus",
   callback = function()
@@ -172,8 +154,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Markdown: continue lists on <CR> like iA Writer does. An empty item is
--- cleared instead of continued, so a second <CR> ends the list.
 local function continue_list()
   local line = vim.api.nvim_get_current_line()
   local indent, marker, rest = line:match("^(%s*)([-*+])%s+(.*)$")

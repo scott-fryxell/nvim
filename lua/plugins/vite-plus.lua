@@ -1,6 +1,3 @@
--- Vite Plus projects keep formatter options in vite.config.js (`fmt`), so run
--- the project's own `vp fmt` rather than bare prettier, whose defaults undo
--- them (de-indented <script>, semicolons, double quotes).
 return {
   {
     "stevearc/conform.nvim",

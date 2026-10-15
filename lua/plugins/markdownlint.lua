@@ -1,7 +1,3 @@
--- Remove markdownlint-cli2, which LazyVim's lang.markdown extra wires into
--- nvim-lint, conform, and mason. Its config lookup is rooted at the cwd and
--- never reaches $HOME, so a single shared ruleset is impossible without
--- committing a home-dir path into every repo. Prettier still formats markdown.
 local function drop(list, name)
   return vim.tbl_filter(function(item)
     return item ~= name
